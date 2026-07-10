@@ -134,14 +134,14 @@ static const struct metric_data metrics[] = {
 };
 
 static void hwmon_name(const char *path, char *dst, size_t dst_len) {
-  char buf[BUF_SIZE];
+  char buf[BUF_SIZE] = { 0 };
   FILE *f;
   size_t len;
 
   // if the path is a symlink to "../../devices/X/Y/...", use X/Y as the name,
   // except if it is "virtual/hwmon"
 
-  len = readlink(path, buf, sizeof buf);
+  len = readlink(path, buf, (sizeof buf) - 1);
   if (len > 14 && memcmp(buf, "../../devices/", 14) == 0) {
     char *start = buf + 14;
     char *end = strchr(start, '/');
