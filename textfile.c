@@ -71,11 +71,13 @@ void textfile_collect(scrape_req *req, void *ctx) {
       continue;
 
     bool has_newline = true;
-    size_t len;
-    while ((len = fread(buf, 1, sizeof buf, f)) > 0) {
+    ssize_t len;
+    do {
+      if ((len = fread(buf, 1, sizeof buf, f)) <= 0)
+        break;
       scrape_write_raw(req, buf, len);
       has_newline = buf[len - 1] == '\n';
-    }
+    } while (len == sizeof buf);
     if (!has_newline)
       scrape_write_raw(req, (char[]){'\n'}, 1);
 
